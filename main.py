@@ -2,20 +2,15 @@ import os
 import datetime
 import re
 import pandas as pd
+import shutil
 
 
-fromSubpath = "//tklgfile8/Process/01_共通/01_Open/PTEA/02 Evaluation DATA@2020"
-yourName = "K.Sakaguchi"
-dir_path0 = os.path.join(fromSubpath, yourName).replace("\\", "/")
-experiment_name = "WiseCAM Raw Data"
-dir_path1 = os.path.join(dir_path0, experiment_name).replace("\\", "/")
 # 該当ファイルをregexで抽出
 def dateDecide(fromPath): 
     """Decide date of data"""
     exdirs = os.listdir(fromPath)
     print(exdirs)
     print("日付を入力してください。(例 20201204)")
-    
     dataDate0 = input()
     regex = dataDate0 +  r"_.+"
     regex2 = r".+_extract"
@@ -35,10 +30,6 @@ def dateDecide(fromPath):
     except UnboundLocalError:
         print("エラー　外部ストレージにデータが見つかりませんでした。")
 
-dirname0 = dateDecide(dir_path1)
-print(dirname0)
-rdataname = "ImageAnalyzeResult.txt"
-
 def chooseFile(fromDir, rdataname):
     """Load csvFile"""
     dataFiles = os.listdir(fromDir)
@@ -55,21 +46,6 @@ def chooseFile(fromDir, rdataname):
         return filelist
     except UnboundLocalError:
         print("エラー　外部ストレージにデータが見つかりませんでした。")
-            
-fileList = chooseFile(dirname0, rdataname)
-print(fileList)
-
-import pandas as pd
-import re
-import shutil
-
-dir_name = os.path.dirname(fileList[0])+"_extract" 
-if(os.path.isdir(dir_name) == False):
-    os.mkdir(dir_name)
-    print(dir_name)
-else:
-    shutil.rmtree(dir_name)
-    os.mkdir(dir_name)
 
 def editCSV(datapath, dir_name):
     rawFile = open(datapath, "r")
@@ -130,9 +106,29 @@ def editCSV(datapath, dir_name):
     outputFile.close()
     editFile.close()
     os.remove(datapath_w)
-
-# dir_name = "C:/Users/190214/Desktop/Files"
-# if(os.path.isdir(dir_name)):
-#     os.mkdir(dir_name)
-for file in fileList:
+    
+    
+if _name_ == "_main_":
+    fromSubpath = "//tklgfile8/Process/01_共通/01_Open/PTEA/02 Evaluation DATA@2020"
+    yourName = "K.Sakaguchi"
+    dir_path0 = os.path.join(fromSubpath, yourName).replace("\\", "/")
+    experiment_name = "WiseCAM Raw Data"
+    dir_path1 = os.path.join(dir_path0, experiment_name).replace("\\", "/")
+    
+    dirname0 = dateDecide(dir_path1)
+    print(dirname0)
+    rdataname = "ImageAnalyzeResult.txt"
+    
+    fileList = chooseFile(dirname0, rdataname)
+    print(fileList)
+        
+    dir_name = os.path.dirname(fileList[0])+"_extract" 
+    if(os.path.isdir(dir_name) == False):
+        os.mkdir(dir_name)
+        print(dir_name)
+    else:
+        shutil.rmtree(dir_name)
+        os.mkdir(dir_name)
+        
+    for file in fileList:
     editCSV(file, dir_name)
